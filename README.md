@@ -1,38 +1,118 @@
 # Activeform
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/activeform`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Form objects for Ruby on Rails.
+* Works with ActiveRecord
+* i18n support
+* Easy to implement
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'activeform'
+gem 'active-form'
 ```
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install activeform
-
 ## Usage
 
-TODO: Write usage instructions here
+### Rails: 
 
-## Development
+#### Create first form object
+Create a forms directory, for example: app/forms and create your first form object there:
+```ruby
+class ProductForm < Activeform
+  validates :name, presence: true
+ 
+  private
+ 
+  def object_class
+    Product
+  end
+ 
+  def permitted_attributes
+    %i[name]
+  end
+end
+```
+Where object_class (for model class) and permitted_attributes (for model attributes from the form) are required methods.
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+To load forms, add this line to config/application.rb
+```ruby
+    config.autoload_paths << Rails.root.join('app/forms/**/')
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+In the form object you have access to all [ActiveModel validations](https://api.rubyonrails.org/classes/ActiveModel/Validations.html)
+
+#### Update your controller actions
+
+```ruby
+  def new 
+    @product_form = ProductForm.new
+  end
+  
+  def edit
+    product =  Product.find(params[:id])
+    @product_form = ProductForm.new(product)
+  end
+ 
+  def create
+    @product_form = ProductForm.new(product_params)
+    if @product_form.save
+      redirect_to products_path
+    else 
+      render :new
+    end
+  end
+ 
+  def update
+    product = Product.find(params[:id])
+    @product_form = ProductForm.new(product)
+    if @product_form.update(product_params)
+      redirect_to products_path
+    else
+      render :edit
+    end
+  end
+```
+#### Update your views
+
+New:
+```ruby
+= form_for(@product_form, url: products_path, method: :post) do |f|
+  = f.text_field :name
+  %small= f.object.errors[:name]&.first 
+  = f.submit
+```
+Edit:
+```ruby
+= form_for(@product_form, url: product_path(@product), method: :patch) do |f|
+  = f.text_field :name
+  %small= f.object.errors[:name]&.first
+  = f.submit
+```
+
+#### i18n
+
+Activeform uses standard ActiveRecord i18n scope for error messages and model names and attributes. 
+```yaml
+en:
+  activerecord:
+    attributes:
+      Product:
+        name:  Name
+        price: Price
+    models:
+      product:
+        one: Product 
+        other: Products 
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/activeform. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/kamilsdz/activeform. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +120,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Activeform project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/activeform/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Activeform project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/kamilsdz/activeform/blob/master/CODE_OF_CONDUCT.md).
