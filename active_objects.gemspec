@@ -2,13 +2,13 @@ lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
-  spec.name          = "active-form"
-  spec.version       = "0.1.2"
+  spec.name          = "active_objects"
+  spec.version       = "0.1.3"
   spec.authors       = ["Kamil Sopata"]
   spec.email         = ["kamilsopata@gmail.com"]
   spec.summary       = %q{Form objects for ActiveRecord models.}
   spec.description   = %q{Form objects for ActiveRecord models.}
-  spec.homepage      = "https://github.com/kamilsdz/activeform"
+  spec.homepage      = "https://github.com/kamilsdz/active_objects"
   spec.license       = "MIT"
 
   # Specify which files should be added to the gem when it is released.

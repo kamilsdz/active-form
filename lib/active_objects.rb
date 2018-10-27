@@ -1,4 +1,4 @@
-class Activeform
+class ActiveObjects
   include ActiveModel::Model
 
   class << self
